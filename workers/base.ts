@@ -33,12 +33,12 @@ abstract class BaseEventHandler {
 
     let latestBlockHeight = await this.flowService.getLatestBlockHeight();
 
-    this.logger("Retrieved latestBlockHeight:", latestBlockHeight.height);
+    this.logger("Retrieved latestBlockHeight:", latestBlockHeight);
 
     // create a cursor on the database
     let blockCursor = await this.cursorService.upsertLatestCursor(
       this.eventName,
-      latestBlockHeight.height
+      latestBlockHeight
     );
 
     if (!blockCursor) {
@@ -127,12 +127,12 @@ abstract class BaseEventHandler {
 
     let toBlock = currentBlockCursor.currentBlockHeight + this.stepSize;
 
-    if (toBlock > latestBlockHeight.height) {
-      toBlock = latestBlockHeight.height;
+    if (toBlock > latestBlockHeight) {
+      toBlock = latestBlockHeight;
     }
 
     this.logger(
-      `fromBlock=${fromBlock} toBlock=${toBlock} latestBlock=${latestBlockHeight.height}`
+      `fromBlock=${fromBlock} toBlock=${toBlock} latestBlock=${latestBlockHeight}`
     );
 
     return { fromBlock, toBlock };
