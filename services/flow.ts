@@ -54,8 +54,9 @@ class Flow {
   }
 
   async getLatestBlockHeight() {
-    const block = await sdk.latestBlock();
-    return block.height;
+    const block = await sdk.send(sdk.build([sdk.getBlock(true)]));
+    const decoded = await sdk.decode(block);
+    return decoded.height;
   }
 }
 
