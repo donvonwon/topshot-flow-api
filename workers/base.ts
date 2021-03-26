@@ -8,8 +8,8 @@ import FlowService from "../services/flow";
 
 abstract class BaseEventHandler {
   private stepSize: number = 200;
-  private stepTimeMs: number = 5000;
-  private latestBlockOffset: number = 1;
+  private stepTimeMs: number = 1000;
+  private latestBlockOffset: number = 5;
   private eventNames: string[] = [];
 
   protected constructor(
@@ -74,7 +74,9 @@ abstract class BaseEventHandler {
             const decoded = await fcl.decode(result);
 
             if (decoded.length) {
-              decoded.forEach(async (event) => await this.onEvent(event));
+              decoded.forEach(async (event) => {
+                await this.onEvent(event);
+              });
             }
 
             // Record the last block that we synchronized up to
