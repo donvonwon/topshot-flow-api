@@ -29,7 +29,7 @@ export function getConfig() {
     },
   };
 
-  const databaseUrl = process.env.DATABASE_URL!;
+  const databaseUrl = process.env.DATABASE_URL;
 
   return {
     port,
