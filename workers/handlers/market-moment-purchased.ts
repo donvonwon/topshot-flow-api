@@ -43,7 +43,9 @@ export default async (event: IMomentPurchasedEvent, di) => {
     .replace(TOPSHOT_CONTRACT_ADDRESS_VAR, contracts.TopShot.address as string)
     .replace(MARKET_CONTRACT_ADDRESS_VAR, contracts.Market.address as string);
 
-  console.log("MomentPurchased event \n", event, "\n", script);
+  // console.log('script', script);
+
+  console.log("MomentPurchased event \n", event, "\n");
 
   const saleMoment = await flowService.executeScript({
     script,
@@ -52,4 +54,6 @@ export default async (event: IMomentPurchasedEvent, di) => {
   });
 
   console.log("saleMoment", saleMoment);
+
+  // TODO: Add database call to document
 };
