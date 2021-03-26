@@ -1,5 +1,6 @@
 import CursorService from "../services/cursor";
 import FlowService from "../services/flow";
+import WorkerService from "../services/worker";
 import BaseEventHandler from "./base";
 import momentPurchasedHandler from "./handlers/market-moment-purchased";
 import momentListedHandler from "./handlers/market-moment-listed";
@@ -16,8 +17,13 @@ const workerEvents = [
 ];
 
 export default class MarketWorker extends BaseEventHandler {
-  constructor(config, cursorService: CursorService, flowService: FlowService) {
-    super(config, cursorService, flowService, workerEvents);
+  constructor(
+    config,
+    cursorService: CursorService,
+    flowService: FlowService,
+    workerService: WorkerService
+  ) {
+    super(config, cursorService, flowService, workerService, workerEvents);
   }
 
   async onEvent(event: any, di: any): Promise<void> {

@@ -2,6 +2,8 @@ import * as t from "@onflow/types";
 import * as fs from "fs";
 import * as sdk from "@onflow/sdk";
 import * as path from "path";
+import pick from "lodash/pick";
+import hash from "object-hash";
 import { getConfig } from "../../config";
 
 interface IMomentPurchasedEvent {
@@ -35,25 +37,42 @@ const MARKET_CONTRACT_ADDRESS_VAR = "0xMARKETADDRESS";
 export default async (event: IMomentPurchasedEvent, di) => {
   const { data, blockHeight } = event;
   const { id: globalMomentId, seller } = data;
-  const { flowService } = di;
+  const { flowService, workerService } = di;
   const { contracts } = getConfig();
 
-  const script = fs
-    .readFileSync(soldDetailsTemplateScript, "utf8")
-    .replace(TOPSHOT_CONTRACT_ADDRESS_VAR, contracts.TopShot.address as string)
-    .replace(MARKET_CONTRACT_ADDRESS_VAR, contracts.Market.address as string);
+  try {
+    const script = fs
+      .readFileSync(soldDetailsTemplateScript, "utf8")
+      .replace(
+        TOPSHOT_CONTRACT_ADDRESS_VAR,
+        contracts.TopShot.address as string
+      )
+      .replace(MARKET_CONTRACT_ADDRESS_VAR, contracts.Market.address as string);
 
-  // console.log('script', script);
+    console.log("MomentPurchased incoming event \n", event, "\n");
 
-  console.log("MomentPurchased event \n", event, "\n");
+    const metadata = await flowService.executeScript({
+      script,
+      blockHeight: blockHeight - 1,
+      args: [sdk.arg(seller, t.Address), sdk.arg(globalMomentId, t.UInt64)],
+    });
 
-  const saleMoment = await flowService.executeScript({
-    script,
-    blockHeight: blockHeight - 1,
-    args: [sdk.arg(seller, t.Address), sdk.arg(globalMomentId, t.UInt64)],
-  });
+    const savedEvent = await workerService.saveRawEvent({
+      hashedId: hash(event), // Use for finding the same event
+      ...pick(event, [
+        "blockId",
+        "blockHeight",
+        "blockTimestamp",
+        "type",
+        "transactionId",
+        "transactionIndex",
+        "eventIndex",
+      ]),
+      metadata,
+    });
 
-  console.log("saleMoment", saleMoment);
-
-  // TODO: Add database call to document
+    console.log("MomentPurchased saved \n", savedEvent, "\n");
+  } catch (error) {
+    console.error(error);
+  }
 };

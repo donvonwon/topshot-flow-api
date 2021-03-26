@@ -2,6 +2,7 @@ import { ec as EC } from "elliptic";
 import { SHA3 } from "sha3";
 import * as fcl from "@onflow/fcl";
 import * as sdk from "@onflow/sdk";
+import { resolveCadence } from "@onflow/sdk-resolve-cadence";
 
 const ec: EC = new EC("p256");
 
@@ -57,7 +58,7 @@ class Flow {
 
     const pipe = await sdk.pipe(interaction, [
       sdk.resolveArguments,
-      sdk.resolveParams,
+      sdk.resolveCadence,
     ]);
 
     return await sdk.decode(await sdk.send(pipe));

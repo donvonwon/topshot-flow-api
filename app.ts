@@ -3,7 +3,7 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import { json, urlencoded } from "body-parser";
 
-const V1 = "/v1/";
+const v1 = "/v1/";
 
 // Init all routes, setup middlewares and dependencies
 const initApp = () => {

@@ -1,12 +1,19 @@
 import * as dotenv from "dotenv";
 import dotenvExpand from "dotenv-expand";
 
-const defaultPort = 3000;
+const defaultPort = "3000";
 const productionEnv = "production";
 const productionDotEnv = ".env";
 const localDotEnv = ".env.local";
 
-export function getConfig() {
+interface IConfig {
+  port: number;
+  accessApi: string;
+  databaseUrl: string;
+  contracts: any;
+}
+
+export function getConfig(): IConfig {
   const env = dotenv.config({
     path:
       process.env.NODE_ENV === productionEnv ? productionDotEnv : localDotEnv,
@@ -14,9 +21,9 @@ export function getConfig() {
 
   dotenvExpand(env);
 
-  const port = process.env.PORT || defaultPort;
+  const port = parseInt(process.env.PORT || defaultPort, 10);
 
-  const accessApi = process.env.FLOW_ACCESS_API;
+  const accessApi = process.env.FLOW_ACCESS_API || "";
 
   const contracts = {
     TopShot: {
@@ -29,13 +36,12 @@ export function getConfig() {
     },
   };
 
-  const databaseUrl = process.env.DATABASE_URL;
+  const databaseUrl = process.env.DATABASE_URL || "";
 
   return {
     port,
     accessApi,
     databaseUrl,
     contracts,
-    blockThreshold: process.env.BLOCK_THRESHOLD,
   };
 }
