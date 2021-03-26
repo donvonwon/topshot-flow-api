@@ -4,4 +4,4 @@
  Emitted when a user lists a Moment for sale in their SaleCollection.
  **/
 
-export default (payload) => {};
+export default (event, di) => {};

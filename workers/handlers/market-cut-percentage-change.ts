@@ -4,4 +4,4 @@
  Emitted when a seller changes the percentage cut that is taken from their sales and sent to a beneficiary.
  **/
 
-export default (payload) => {};
+export default (event, di) => {};

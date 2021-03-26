@@ -4,4 +4,4 @@
  Emitted when a user changes the price of their Moment.
  **/
 
-export default (payload) => {};
+export default (event, di) => {};

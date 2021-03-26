@@ -75,7 +75,7 @@ abstract class BaseEventHandler {
 
             if (decoded.length) {
               decoded.forEach(async (event) => {
-                await this.onEvent(event);
+                await this.onEvent(event, { flowService: this.flowService });
               });
             }
 
@@ -100,7 +100,7 @@ abstract class BaseEventHandler {
     });
   }
 
-  abstract onEvent(event: any): Promise<void>;
+  abstract onEvent(event: any, di: { flowService: FlowService }): Promise<void>;
 
   private async getBlockRange(currentBlockCursor) {
     const latestBlockHeight =
