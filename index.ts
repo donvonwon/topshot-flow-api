@@ -1,5 +1,6 @@
 import * as fcl from "@onflow/fcl";
-import { connect } from "mongoose";
+import mongoose from "mongoose";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 import { getConfig } from "./config";
 import initApp from "./app";
 import CursorService from "./services/cursor";
@@ -8,11 +9,13 @@ import WorkerService from "./services/worker";
 import MarketWorker from "./workers/market-worker";
 import TopshotWorker from "./workers/topshot-worker";
 
+mongoose.plugin(updateIfCurrentPlugin);
+
 async function run() {
   const config = getConfig();
 
   // Setup mongob connection
-  await connect(config.databaseUrl, {
+  await mongoose.connect(config.databaseUrl, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
