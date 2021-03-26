@@ -1,6 +1,6 @@
 import * as t from "@onflow/types";
 import * as fs from "fs";
-import * as fcl from "@onflow/fcl";
+import * as sdk from "@onflow/sdk";
 import * as path from "path";
 import { getConfig } from "../../config";
 
@@ -33,7 +33,7 @@ const MARKET_CONTRACT_ADDRESS_VAR = "0xMARKETADDRESS";
  **/
 
 export default async (event: IMomentPurchasedEvent, di) => {
-  const { data } = event;
+  const { data, blockHeight } = event;
   const { id: globalMomentId, seller } = data;
   const { flowService } = di;
   const { contracts } = getConfig();
@@ -47,7 +47,8 @@ export default async (event: IMomentPurchasedEvent, di) => {
 
   const saleMoment = await flowService.executeScript({
     script,
-    args: [fcl.arg(seller, t.Address), fcl.arg(globalMomentId, t.UInt64)],
+    blockHeight: blockHeight - 1,
+    args: [sdk.arg(seller, t.Address), sdk.arg(globalMomentId, t.UInt64)],
   });
 
   console.log("saleMoment", saleMoment);

@@ -48,9 +48,19 @@ class Flow {
     return await fcl.tx(response).onceSealed();
   };
 
-  async executeScript<T>({ script, args }): Promise<T> {
-    const response = await fcl.send([fcl.script`${script}`, fcl.args(args)]);
-    return await fcl.decode(response);
+  async executeScript<T>({ script, blockHeight, args }): Promise<T> {
+    const interaction = await sdk.build([
+      sdk.script(script),
+      sdk.atBlockHeight(blockHeight),
+      sdk.args(args),
+    ]);
+
+    const pipe = await sdk.pipe(interaction, [
+      sdk.resolveArguments,
+      sdk.resolveParams,
+    ]);
+
+    return await sdk.decode(await sdk.send(pipe));
   }
 
   async getLatestBlockHeight(isSealed = true) {
