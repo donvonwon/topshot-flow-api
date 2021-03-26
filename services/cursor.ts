@@ -1,7 +1,7 @@
 let tempCursor = {
   id: "a",
-  eventName: "MomentPurchased",
-  currentBlockHeight: 27079384,
+  eventName: "",
+  currentBlockHeight: 0,
 };
 
 class CursorService {

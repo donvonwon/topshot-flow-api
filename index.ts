@@ -35,86 +35,86 @@ async function run() {
   });
 
   // Run market contract workers
-  await new MarketMomentPurchasedWorker(
+  new MarketMomentPurchasedWorker(
     config.contracts.Market,
     cursorService,
     flowService
   ).run();
 
-  await new MarketMomentListedWorker(
+  new MarketMomentListedWorker(
     config.contracts.Market,
     cursorService,
     flowService
   ).run();
 
-  await new MarketMomentPriceChangedWorker(
+  new MarketMomentPriceChangedWorker(
     config.contracts.Market,
     cursorService,
     flowService
   ).run();
 
-  await new MarketMomentWithdrawnWorker(
+  new MarketMomentWithdrawnWorker(
     config.contracts.Market,
     cursorService,
     flowService
   ).run();
 
-  await new MarketCutPercentageWorker(
+  new MarketCutPercentageWorker(
     config.contracts.Market,
     cursorService,
     flowService
   ).run();
 
   // Run topshot contract workers
-  await new TopShotDepositWorker(
+  new TopShotDepositWorker(
     config.contracts.TopShot,
     cursorService,
     flowService
   ).run();
 
-  await new TopShotMomentMintedWorker(
+  new TopShotMomentMintedWorker(
     config.contracts.TopShot,
     cursorService,
     flowService
   ).run();
 
-  await new TopShotNewSeriesWorker(
+  new TopShotNewSeriesWorker(
     config.contracts.TopShot,
     cursorService,
     flowService
   ).run();
 
-  await new TopShotPlayAddedToSetWorker(
+  new TopShotPlayAddedToSetWorker(
     config.contracts.TopShot,
     cursorService,
     flowService
   ).run();
 
-  await new TopShotPlayCreatedWorker(
+  new TopShotPlayCreatedWorker(
     config.contracts.TopShot,
     cursorService,
     flowService
   ).run();
 
-  await new TopShotPlayRetiredFromSetWorker(
+  new TopShotPlayRetiredFromSetWorker(
     config.contracts.TopShot,
     cursorService,
     flowService
   ).run();
 
-  await new TopShotSetCreatedWorker(
+  new TopShotSetCreatedWorker(
     config.contracts.TopShot,
     cursorService,
     flowService
   ).run();
 
-  await new TopShotSetLockedWorker(
+  new TopShotSetLockedWorker(
     config.contracts.TopShot,
     cursorService,
     flowService
   ).run();
 
-  await new TopShotWithdrawWorker(
+  new TopShotWithdrawWorker(
     config.contracts.TopShot,
     cursorService,
     flowService

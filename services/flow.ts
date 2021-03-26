@@ -1,7 +1,7 @@
 import { ec as EC } from "elliptic";
 import { SHA3 } from "sha3";
 import * as fcl from "@onflow/fcl";
-import { latestBlock } from "@onflow/sdk-latest-block";
+import { latestBlock } from "@onflow/sdk";
 
 const ec: EC = new EC("p256");
 
@@ -53,8 +53,8 @@ class Flow {
     return await fcl.decode(response);
   }
 
-  async getLatestBlockHeight() {
-    return latestBlock();
+  async getLatestBlockHeight(options = {}) {
+    return latestBlock(false, options);
   }
 }
 

@@ -36,5 +36,6 @@ export function getConfig() {
     accessApi,
     databaseUrl,
     contracts,
+    blockThreshold: process.env.BLOCK_THRESHOLD,
   };
 }

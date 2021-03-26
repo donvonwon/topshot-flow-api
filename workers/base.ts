@@ -1,6 +1,5 @@
 import * as fcl from "@onflow/fcl";
-import { send } from "@onflow/sdk-send";
-import { getEvents } from "@onflow/sdk-build-get-events";
+import { getEventsAtBlockHeightRange, send } from "@onflow/sdk";
 import CursorService from "../services/cursor";
 import FlowService from "../services/flow";
 
@@ -8,13 +7,15 @@ interface EventDetails {
   blockHeight: number;
 }
 
-// BaseEventHandler will iterate through a range of block_heights and then run a callback to process any events we
-// are interested in. It also keeps a cursor in the database so we can resume from where we left off at any time.
+// BaseEventHandler will iterate through a range of block heights and then run a callback to process any events we
+// are interested in. It also keeps track of a cursor in the database so we can resume from where we left off.
+
 abstract class BaseEventHandler {
   private stepSize: number = 1000;
-  private stepTimeMs: number = 1000;
+  private stepTimeMs: number = 500;
   private blockThreshold: number = 100;
   private eventName: string = "";
+  private logger: any = null;
 
   protected constructor(
     private readonly config: any,
@@ -24,12 +25,15 @@ abstract class BaseEventHandler {
   ) {
     const address = fcl.sansPrefix(config.address);
     this.eventName = `A.${address}.${config.name}.${eventType}`;
+    this.logger = console.log.bind(null, this.eventName);
   }
 
   async run() {
-    console.log("fetching latest block height");
+    this.logger("Fetching latest block height...");
+
     let latestBlockHeight = await this.flowService.getLatestBlockHeight();
-    console.log("latestBlockHeight =", latestBlockHeight.height);
+
+    this.logger("Retrieved latestBlockHeight:", latestBlockHeight.height);
 
     // create a cursor on the database
     let blockCursor = await this.cursorService.upsertLatestCursor(
@@ -39,7 +43,7 @@ abstract class BaseEventHandler {
 
     if (!blockCursor) {
       throw new Error(
-        `invalid state, no block cursor defined for event_name=${this.eventName}`
+        `Invalid state, no block cursor defined for event_name=${this.eventName}`
       );
     }
 
@@ -48,20 +52,22 @@ abstract class BaseEventHandler {
 
     while (true) {
       await this.sleep(this.stepTimeMs);
+
       try {
         // calculate fromBlock, toBlock
         ({ fromBlock, toBlock } = await this.getBlockRange(blockCursor));
       } catch (e) {
-        console.warn("error retrieving block range");
+        console.warn("Error retrieving block range");
         continue;
       }
 
-      // make sure we query the access node only when we have a substantial gap
+      // Make sure we query the access node only when we have a substantial gap
       // between from and to block ranges; currently if we query the access node
       // when the gap is too narrow, it returns an error.
       const blockDiff = toBlock - fromBlock;
+
       if (blockDiff < this.blockThreshold) {
-        console.log("skipping block, blockDiff = ", blockDiff);
+        this.logger("Skipping block, blockDiff = ", blockDiff);
         continue;
       }
 
@@ -72,7 +78,7 @@ abstract class BaseEventHandler {
         // `getEvents` will retrieve all events of the given type within the block height range supplied.
         // See https://docs.onflow.org/core-contracts/access-api/#geteventsforheightrange
         getEventsResult = await send([
-          getEvents(this.eventName, fromBlock, toBlock),
+          getEventsAtBlockHeightRange(this.eventName, fromBlock, toBlock),
         ]);
         eventList = await fcl.decode(getEventsResult);
       } catch (e) {
@@ -84,13 +90,15 @@ abstract class BaseEventHandler {
       }
 
       for (let i = 0; i < eventList.length; i++) {
-        console.log(
-          "block_height =",
+        this.logger(
+          "Block height =",
           getEventsResult.events[i].blockHeight,
-          " payload =",
+          "Payload =",
           eventList[i].data
         );
+
         const blockHeight = getEventsResult.events[i].blockHeight;
+
         await this.processAndCatchEvent(blockHeight, eventList, i);
       }
 
@@ -106,9 +114,8 @@ abstract class BaseEventHandler {
     try {
       await this.onEvent({ blockHeight }, eventList[i].data);
     } catch (e) {
-      // If we get an error, we're just continuing the loop for now, but they in a production graded app they should
-      // be handled accordingly
-      console.error(`error processing event block_height=${blockHeight}`, e);
+      // TODO: Handle event error gracefully
+      console.error(`Error processing event block_height=${blockHeight}`, e);
     }
   }
 
@@ -117,13 +124,17 @@ abstract class BaseEventHandler {
   private async getBlockRange(currentBlockCursor) {
     const latestBlockHeight = await this.flowService.getLatestBlockHeight();
     const fromBlock = currentBlockCursor.currentBlockHeight;
+
     let toBlock = currentBlockCursor.currentBlockHeight + this.stepSize;
+
     if (toBlock > latestBlockHeight.height) {
       toBlock = latestBlockHeight.height;
     }
-    console.log(
+
+    this.logger(
       `fromBlock=${fromBlock} toBlock=${toBlock} latestBlock=${latestBlockHeight.height}`
     );
+
     return { fromBlock, toBlock };
   }
 
