@@ -7,9 +7,9 @@ import FlowService from "../services/flow";
 // are interested in. It also keeps track of a cursor in the database so we can resume from where we left off.
 
 abstract class BaseEventHandler {
-  private stepSize: number = 200;
-  private stepTimeMs: number = 1000;
-  private latestBlockOffset: number = 5;
+  private stepSize: number = 1000;
+  private stepTimeMs: number = 2500;
+  private latestBlockOffset: number = 3;
   private eventNames: string[] = [];
 
   protected constructor(
