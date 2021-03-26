@@ -4,4 +4,4 @@
  Emitted when a new play is added to a set.
  **/
 
-export default (payload) => {};
+export default (event, di) => {};

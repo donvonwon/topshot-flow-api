@@ -53,8 +53,8 @@ class Flow {
     return await fcl.decode(response);
   }
 
-  async getLatestBlockHeight() {
-    const block = await sdk.send(sdk.build([sdk.getBlock(true)]));
+  async getLatestBlockHeight(isSealed = true) {
+    const block = await sdk.send(sdk.build([sdk.getBlock(isSealed)]));
     const decoded = await sdk.decode(block);
     return decoded.height;
   }

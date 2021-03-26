@@ -4,4 +4,4 @@
  Emitted when a set is locked, meaning plays cannot be added.
  **/
 
-export default (payload) => {};
+export default (event, di) => {};

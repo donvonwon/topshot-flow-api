@@ -4,4 +4,4 @@
  Emitted when a new play has been created and added to the smart contract by an admin.
  **/
 
-export default (payload) => {};
+export default (event, di) => {};

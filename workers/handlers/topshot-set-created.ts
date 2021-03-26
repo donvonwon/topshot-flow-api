@@ -4,4 +4,4 @@
  Emitted when a new set is created.
  **/
 
-export default (payload) => {};
+export default (event, di) => {};

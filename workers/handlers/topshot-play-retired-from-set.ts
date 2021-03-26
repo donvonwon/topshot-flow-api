@@ -5,4 +5,4 @@
  Indicates that that play/set combination and cannot be used to mint moments any more.
  **/
 
-export default (payload) => {};
+export default (event, di) => {};

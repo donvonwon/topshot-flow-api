@@ -7,9 +7,9 @@ import FlowService from "../services/flow";
 // are interested in. It also keeps track of a cursor in the database so we can resume from where we left off.
 
 abstract class BaseEventHandler {
-  private stepSize: number = 1000;
-  private stepTimeMs: number = 2500;
-  private latestBlockOffset: number = 3;
+  private stepSize: number = 200;
+  private stepTimeMs: number = 5000;
+  private latestBlockOffset: number = 1;
   private eventNames: string[] = [];
 
   protected constructor(
@@ -31,9 +31,10 @@ abstract class BaseEventHandler {
     const latestBlockHeight = await this.flowService.getLatestBlockHeight();
 
     console.log("Retrieved latestBlockHeight:", latestBlockHeight);
+    console.log("Current events being worked", this.eventNames.join(","));
 
     const cursors = this.eventNames.map((eventName) => {
-      const cursor = this.cursorService.upsertLatestCursor(
+      const cursor = this.cursorService.findOrInsertLatestCursor(
         eventName,
         latestBlockHeight
       );
@@ -81,13 +82,12 @@ abstract class BaseEventHandler {
 
             // Record the last block that we synchronized up to
             blockCursor = await this.cursorService.updateCursorById(
-              blockCursor.id,
+              eventName,
               toBlock
             );
           } catch (e) {
             console.error(
-              `${eventName}: Error retrieving events for block range fromBlock=${fromBlock} toBlock=${toBlock}`,
-              e
+              `${eventName}: Error retrieving events for block range fromBlock=${fromBlock} toBlock=${toBlock}`
             );
           }
         }
@@ -106,10 +106,15 @@ abstract class BaseEventHandler {
     const latestBlockHeight =
       (await this.flowService.getLatestBlockHeight()) - this.latestBlockOffset;
 
+    console.log(
+      "currentBlockCursor.currentBlockHeight",
+      currentBlockCursor.currentBlockHeight
+    );
+
     const fromBlock = currentBlockCursor.currentBlockHeight + 1;
     let toBlock = currentBlockCursor.currentBlockHeight + this.stepSize;
 
-    // Don't look ahead to unsealed blocks
+    // Keep events scope to the sealed blocks
     if (toBlock > latestBlockHeight) {
       toBlock = latestBlockHeight;
     }

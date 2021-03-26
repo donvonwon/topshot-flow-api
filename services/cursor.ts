@@ -1,17 +1,14 @@
 let tempCursors = {};
 
 class CursorService {
-  async upsertLatestCursor(eventName: string, latestBlockHeight: number) {
-    let blockCursor = tempCursors[eventName];
-    if (!blockCursor) {
+  async findOrInsertLatestCursor(eventName: string, latestBlockHeight: number) {
+    if (!tempCursors[eventName]) {
       tempCursors[eventName] = {
         eventName,
         currentBlockHeight: latestBlockHeight,
       };
-
-      blockCursor = tempCursors[eventName];
     }
-    return blockCursor;
+    return tempCursors[eventName];
   }
 
   async updateCursorById(id: string, currentBlockHeight: number) {

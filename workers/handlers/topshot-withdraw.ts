@@ -6,4 +6,4 @@
  If the collection was not in storage when the Moment was withdrawn, from will be nil.
  **/
 
-export default (payload) => {};
+export default (event, di) => {};

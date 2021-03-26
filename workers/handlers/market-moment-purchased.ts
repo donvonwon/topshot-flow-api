@@ -4,6 +4,25 @@ import * as fcl from "@onflow/fcl";
 import * as path from "path";
 import { getConfig } from "../../config";
 
+interface IMomentPurchasedEvent {
+  blockId: string;
+  blockHeight: number;
+  blockTimestamp: string;
+  type: string;
+  transactionId: string;
+  transactionIndex: number;
+  eventIndex: number;
+  data: {
+    id: number;
+    price: string;
+    seller: string;
+  };
+}
+
+const soldDetailsTemplateScript = path.join(
+  __dirname,
+  `../../cadence/scripts/moment_sold_details.cdc`
+);
 const TOPSHOT_CONTRACT_ADDRESS_VAR = "0xTOPSHOTADDRESS";
 const MARKET_CONTRACT_ADDRESS_VAR = "0xMARKETADDRESS";
 
@@ -13,18 +32,18 @@ const MARKET_CONTRACT_ADDRESS_VAR = "0xMARKETADDRESS";
  Emitted when a user purchases a Moment that is for sale.
  **/
 
-export default async (event, di) => {
+export default async (event: IMomentPurchasedEvent, di) => {
   const { data } = event;
   const { id: globalMomentId, seller } = data;
   const { flowService } = di;
   const { contracts } = getConfig();
 
   const script = fs
-    .readFileSync(path.join(__dirname, `../../cadence/sale_moment.cdc`), "utf8")
+    .readFileSync(soldDetailsTemplateScript, "utf8")
     .replace(TOPSHOT_CONTRACT_ADDRESS_VAR, contracts.TopShot.address as string)
     .replace(MARKET_CONTRACT_ADDRESS_VAR, contracts.Market.address as string);
 
-  console.log("MomentPurchased payload", data, script);
+  console.log("MomentPurchased event \n", event, "\n", script);
 
   const saleMoment = await flowService.executeScript({
     script,

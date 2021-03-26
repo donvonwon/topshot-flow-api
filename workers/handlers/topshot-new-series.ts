@@ -4,4 +4,4 @@
  Emitted when a new series has been triggered by an admin.
  **/
 
-export default (payload) => {};
+export default (event, di) => {};

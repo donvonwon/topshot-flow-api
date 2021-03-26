@@ -1,7 +1,7 @@
 import TopShot from 0xTOPSHOTADDRESS
 import Market from 0xMARKETADDRESS
 
-pub struct SaleMoment {
+pub struct MomentSoldDetails {
     pub var id: UInt64
     pub var playId: UInt32
     pub var play: {String: String}
@@ -21,10 +21,13 @@ pub struct SaleMoment {
     }
 }
 
-pub fun main(sellerAddress: Address, momentID: UInt64): SaleMoment {
+pub fun main(sellerAddress: Address, momentID: UInt64): MomentSoldDetails {
 
     let collectionRef = getAccount(sellerAddress).getCapability(/public/topshotSaleCollection).borrow<&{Market.SalePublic}>()
             ?? panic("Could not borrow capability from public collection")
 
-    return SaleMoment(moment: collectionRef.borrowMoment(id: momentID)!, price: collectionRef.getPrice(tokenID: momentID)!)
+    let soldMoment = collectionRef.borrowMoment(id: momentID);
+    let soldPrice = collectionRef.getPrice(tokenID: momentID);
+
+    return MomentSoldDetails(moment: soldMoment!, price: soldPrice!)
 }

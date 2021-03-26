@@ -7,4 +7,4 @@
  It corresponds to the place in that edition where it was minted.
  **/
 
-export default (payload) => {};
+export default (event, di) => {};
