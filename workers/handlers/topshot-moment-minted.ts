@@ -1,3 +1,5 @@
+import hash from "object-hash";
+
 /**
  pub event MomentMinted(momentID: UInt64, playID: UInt32, setID: UInt32, serialNumber: UInt32)
 
@@ -7,4 +9,17 @@
  It corresponds to the place in that edition where it was minted.
  **/
 
-export default (event, di) => {};
+export default async (event: any, di) => {
+  const { workerService } = di;
+
+  const rawEvent = {
+    hashedId: hash(event),
+    ...event,
+  };
+
+  try {
+    await workerService.saveRawEvent(rawEvent);
+  } catch (error) {
+    console.error(error);
+  }
+};

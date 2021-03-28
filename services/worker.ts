@@ -5,6 +5,7 @@ class WorkerService {
     return RawEvent.findOneAndUpdate({ hashedId: event.hashedId }, event, {
       new: true, // Return new record
       upsert: true,
+      useFindAndModify: false,
     });
   }
 }

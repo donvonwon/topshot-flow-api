@@ -1,4 +1,5 @@
 import { model, Schema, Model, Document } from "mongoose";
+import versioner from "../plugins/versioner";
 
 export interface IEvent extends Document {
   hashedId: string;
@@ -9,6 +10,7 @@ export interface IEvent extends Document {
   transactionId: string;
   transactionIndex: number;
   eventIndex: number;
+  data: object;
   metadata: object;
 }
 
@@ -22,10 +24,13 @@ const EventSchema: Schema = new Schema(
     transactionId: { type: String, required: true },
     transactionIndex: { type: Number, required: true },
     eventIndex: { type: Number, required: true },
+    data: { type: Schema.Types.Mixed, required: false },
     metadata: { type: Schema.Types.Mixed, required: false },
   },
   { autoIndex: true, timestamps: true }
 );
+
+EventSchema.plugin(versioner);
 
 const RawEvent: Model<IEvent> = model("RawEvent", EventSchema);
 

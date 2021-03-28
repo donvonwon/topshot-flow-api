@@ -9,9 +9,9 @@ import WorkerService from "../services/worker";
 // are interested in. It also keeps track of a cursor in the database so we can resume from where we left off.
 
 abstract class BaseEventHandler {
-  private stepSize: number = 200;
+  private stepSize: number = 1000;
   private stepTimeMs: number = 1000;
-  private latestBlockOffset: number = 1;
+  private latestBlockOffset: number = 3;
   private eventNames: string[] = [];
 
   protected constructor(
@@ -23,9 +23,7 @@ abstract class BaseEventHandler {
   ) {
     const address = fcl.sansPrefix(config.address);
 
-    this.eventNames = workerEvents.map(
-      (eventType) => `A.${address}.${config.name}.${eventType}`
-    );
+    this.eventNames = workerEvents.map((eventType) => `A.${address}.${config.name}.${eventType}`);
   }
 
   async run() {
@@ -37,10 +35,7 @@ abstract class BaseEventHandler {
     console.log("Current events being worked", this.eventNames.join(","));
 
     const cursors = this.eventNames.map((eventName: string) => {
-      const cursor = this.cursorService.findOrInsertLatestCursor(
-        eventName,
-        latestBlockHeight
-      );
+      const cursor = this.cursorService.findOrInsertLatestCursor(eventName, latestBlockHeight);
       return { cursor, eventName };
     });
 
@@ -66,17 +61,11 @@ abstract class BaseEventHandler {
           console.warn(`${eventName}: Error retrieving block range:`, e);
         }
 
-        console.log(
-          `${eventName}: from<to ${
-            fromBlock <= toBlock
-          } fromBlock=${fromBlock} toBlock=${toBlock} latestBlock=${newLatestBlockHeight}`
-        );
+        console.log(`${eventName}: from=${fromBlock} to=${toBlock} latest=${newLatestBlockHeight}`);
 
         if (fromBlock <= toBlock) {
           try {
-            const result = await send([
-              getEventsAtBlockHeightRange(eventName, fromBlock, toBlock),
-            ]);
+            const result = await send([getEventsAtBlockHeightRange(eventName, fromBlock, toBlock)]);
             const decoded = await fcl.decode(result);
 
             if (decoded.length) {
@@ -87,16 +76,14 @@ abstract class BaseEventHandler {
                 });
               });
             }
-
+          } catch (e) {
+            console.error(`${eventName}: Error retrieving events from=${fromBlock} to=${toBlock}`);
+          } finally {
             // Record the last block that we synchronized up to
             blockCursor = (await this.cursorService.updateCursorByEventName(
               eventName,
               toBlock
             )) as IBlockCursor;
-          } catch (e) {
-            console.error(
-              `${eventName}: Error retrieving events for block range fromBlock=${fromBlock} toBlock=${toBlock}`
-            );
           }
         }
 

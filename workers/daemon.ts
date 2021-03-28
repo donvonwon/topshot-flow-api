@@ -1,6 +1,5 @@
 import * as fcl from "@onflow/fcl";
 import mongoose from "mongoose";
-import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 import { getConfig } from "../config";
 import CursorService from "../services/cursor";
 import FlowService from "../services/flow";
@@ -10,8 +9,6 @@ import TopshotWorker from "./topshot-worker";
 
 // Daemon style worker to run in isolation
 // API can integrate this in directly and run in parallel on API initialization
-
-mongoose.plugin(updateIfCurrentPlugin);
 
 async function run() {
   const config = getConfig();

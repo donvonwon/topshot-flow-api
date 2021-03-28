@@ -2,24 +2,8 @@ import * as t from "@onflow/types";
 import * as fs from "fs";
 import * as sdk from "@onflow/sdk";
 import * as path from "path";
-import pick from "lodash/pick";
 import hash from "object-hash";
 import { getConfig } from "../../config";
-
-interface IMomentPurchasedEvent {
-  blockId: string;
-  blockHeight: number;
-  blockTimestamp: string;
-  type: string;
-  transactionId: string;
-  transactionIndex: number;
-  eventIndex: number;
-  data: {
-    id: number;
-    price: string;
-    seller: string;
-  };
-}
 
 const soldDetailsTemplateScript = path.join(
   __dirname,
@@ -34,45 +18,34 @@ const MARKET_CONTRACT_ADDRESS_VAR = "0xMARKETADDRESS";
  Emitted when a user purchases a Moment that is for sale.
  **/
 
-export default async (event: IMomentPurchasedEvent, di) => {
+export default async (event: any, di) => {
   const { data, blockHeight } = event;
   const { id: globalMomentId, seller } = data;
   const { flowService, workerService } = di;
   const { contracts } = getConfig();
+  const rawEvent = {
+    hashedId: hash(event),
+    ...event,
+  };
 
   try {
     const script = fs
       .readFileSync(soldDetailsTemplateScript, "utf8")
-      .replace(
-        TOPSHOT_CONTRACT_ADDRESS_VAR,
-        contracts.TopShot.address as string
-      )
+      .replace(TOPSHOT_CONTRACT_ADDRESS_VAR, contracts.TopShot.address as string)
       .replace(MARKET_CONTRACT_ADDRESS_VAR, contracts.Market.address as string);
 
-    console.log("MomentPurchased incoming event \n", event, "\n");
-
-    const metadata = await flowService.executeScript({
+    rawEvent.metadata = await flowService.executeScript({
       script,
       blockHeight: blockHeight - 1,
       args: [sdk.arg(seller, t.Address), sdk.arg(globalMomentId, t.UInt64)],
     });
-
-    const savedEvent = await workerService.saveRawEvent({
-      hashedId: hash(event), // Use for finding the same event
-      ...pick(event, [
-        "blockId",
-        "blockHeight",
-        "blockTimestamp",
-        "type",
-        "transactionId",
-        "transactionIndex",
-        "eventIndex",
-      ]),
-      metadata,
-    });
-
-    console.log("MomentPurchased saved \n", savedEvent, "\n");
   } catch (error) {
-    console.error(error);
+    console.error(`Error in event metadata: ${rawEvent.blockHeight}`);
+  }
+
+  try {
+    await workerService.saveRawEvent(rawEvent);
+  } catch (error) {
+    console.error(`Error in saving raw event: ${rawEvent.blockHeight}`);
   }
 };

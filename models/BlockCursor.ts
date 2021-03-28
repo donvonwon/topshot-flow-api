@@ -1,4 +1,5 @@
 import { model, Schema, Model, Document } from "mongoose";
+import versioner from "../plugins/versioner";
 
 export interface IBlockCursor extends Document {
   eventName: string;
@@ -12,6 +13,8 @@ const BlockCursorSchema: Schema = new Schema(
   },
   { autoIndex: true, timestamps: true }
 );
+
+BlockCursorSchema.plugin(versioner);
 
 const BlockCursor: Model<IBlockCursor> = model(
   "BlockCursor",

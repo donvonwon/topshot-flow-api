@@ -1,3 +1,5 @@
+import hash from "object-hash";
+
 /**
  pub event PlayRetiredFromSet(setID: UInt32, playID: UInt32, numMoments: UInt32)
 
@@ -5,4 +7,17 @@
  Indicates that that play/set combination and cannot be used to mint moments any more.
  **/
 
-export default (event, di) => {};
+export default async (event: any, di) => {
+  const { workerService } = di;
+
+  const rawEvent = {
+    hashedId: hash(event),
+    ...event,
+  };
+
+  try {
+    await workerService.saveRawEvent(rawEvent);
+  } catch (error) {
+    console.error(error);
+  }
+};

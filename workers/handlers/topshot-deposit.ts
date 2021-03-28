@@ -1,3 +1,5 @@
+import hash from "object-hash";
+
 /**
  pub event Deposit(id: UInt64, to: Address?)
 
@@ -6,4 +8,17 @@
  If the collection was not in storage when the Moment was deposited, to will be nil.
  **/
 
-export default (event, di) => {};
+export default async (event: any, di) => {
+  const { workerService } = di;
+
+  const rawEvent = {
+    hashedId: hash(event),
+    ...event,
+  };
+
+  try {
+    await workerService.saveRawEvent(rawEvent);
+  } catch (error) {
+    console.error(error);
+  }
+};

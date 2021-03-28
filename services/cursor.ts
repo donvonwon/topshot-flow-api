@@ -19,7 +19,10 @@ class CursorService {
       {
         currentBlockHeight,
       },
-      { new: true }
+      {
+        new: true,
+        useFindAndModify: false,
+      }
     );
   }
 }
