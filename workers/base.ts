@@ -9,7 +9,7 @@ import WorkerService from "../services/worker";
 // are interested in. It also keeps track of a cursor in the database so we can resume from where we left off.
 
 abstract class BaseEventHandler {
-  private stepSize: number = 1000;
+  private stepSize: number = 300;
   private stepTimeMs: number = 1000;
   private latestBlockOffset: number = 3;
   private eventNames: string[] = [];
@@ -69,21 +69,23 @@ abstract class BaseEventHandler {
             const decoded = await fcl.decode(result);
 
             if (decoded.length) {
-              decoded.forEach(async (event) => {
-                await this.onEvent(event, {
-                  flowService: this.flowService,
-                  workerService: this.workerService,
-                });
-              });
+              await Promise.all(
+                decoded.map((event) =>
+                  this.onEvent(event, {
+                    flowService: this.flowService,
+                    workerService: this.workerService,
+                  })
+                )
+              );
             }
-          } catch (e) {
-            console.error(`${eventName}: Error retrieving events from=${fromBlock} to=${toBlock}`);
-          } finally {
+
             // Record the last block that we synchronized up to
             blockCursor = (await this.cursorService.updateCursorByEventName(
               eventName,
               toBlock
             )) as IBlockCursor;
+          } catch (e) {
+            console.error(`${eventName}: Error retrieving events from=${fromBlock} to=${toBlock}`);
           }
         }
 

@@ -29,16 +29,16 @@ export default async (event: any, di) => {
   };
 
   try {
-    const script = fs
-      .readFileSync(soldDetailsTemplateScript, "utf8")
-      .replace(TOPSHOT_CONTRACT_ADDRESS_VAR, contracts.TopShot.address as string)
-      .replace(MARKET_CONTRACT_ADDRESS_VAR, contracts.Market.address as string);
-
-    rawEvent.metadata = await flowService.executeScript({
-      script,
-      blockHeight: blockHeight - 1,
-      args: [sdk.arg(seller, t.Address), sdk.arg(globalMomentId, t.UInt64)],
-    });
+    // const script = fs
+    //   .readFileSync(soldDetailsTemplateScript, "utf8")
+    //   .replace(TOPSHOT_CONTRACT_ADDRESS_VAR, contracts.TopShot.address as string)
+    //   .replace(MARKET_CONTRACT_ADDRESS_VAR, contracts.Market.address as string);
+    //
+    // rawEvent.metadata = await flowService.executeScript({
+    //   script,
+    //   blockHeight: blockHeight - 1,
+    //   args: [sdk.arg(seller, t.Address), sdk.arg(globalMomentId, t.UInt64)],
+    // });
   } catch (error) {
     console.error(`Error in event metadata: ${rawEvent.blockHeight}`);
   }
