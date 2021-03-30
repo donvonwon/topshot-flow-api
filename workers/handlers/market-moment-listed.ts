@@ -30,21 +30,22 @@ export default async (event: any, di) => {
   };
 
   try {
-    // const script = fs
-    //   .readFileSync(listDetailsTemplateScript, "utf8")
-    //   .replace(TOPSHOT_CONTRACT_ADDRESS_VAR, contracts.TopShot.address as string)
-    //   .replace(MARKET_CONTRACT_ADDRESS_VAR, contracts.Market.address as string);
-    //
-    // rawEvent.metadata = await flowService.executeScript({
-    //   script,
-    //   blockHeight: blockHeight - 1,
-    //   args: [
-    //     sdk.arg(seller, t.Address),
-    //     sdk.arg(globalMomentId, t.UInt64),
-    //     sdk.arg(price, t.UFix64),
-    //   ],
-    // });
+    const script = fs
+      .readFileSync(listDetailsTemplateScript, "utf8")
+      .replace(TOPSHOT_CONTRACT_ADDRESS_VAR, contracts.TopShot.address as string)
+      .replace(MARKET_CONTRACT_ADDRESS_VAR, contracts.Market.address as string);
+
+    rawEvent.metadata = await flowService.executeScript({
+      script,
+      blockHeight: blockHeight - 1,
+      args: [
+        sdk.arg(globalMomentId, t.UInt64),
+        sdk.arg(price, t.UFix64),
+        sdk.arg(seller, t.Address),
+      ],
+    });
   } catch (error) {
+    console.log("error", error.message);
     console.error(`Error in event metadata: ${rawEvent.blockHeight}`);
   }
 

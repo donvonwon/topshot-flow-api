@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import dotenvExpand from "dotenv-expand";
 
-const defaultPort = "3000";
+const defaultPort = "6999";
 const productionEnv = "production";
 const productionDotEnv = ".env";
 const localDotEnv = ".env.local";

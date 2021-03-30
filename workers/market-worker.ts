@@ -12,8 +12,8 @@ const workerEvents = [
   "MomentPurchased",
   "MomentListed",
   "MomentWithdrawn",
-  "MomentPriceChanged",
-  "CutPercentageChanged",
+  // "MomentPriceChanged",
+  // "CutPercentageChanged",
 ];
 
 export default class MarketWorker extends BaseEventHandler {

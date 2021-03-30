@@ -14,14 +14,14 @@ import topshotWithrawHandler from "./handlers/topshot-withdraw";
 
 const workerEvents = [
   "MomentMinted",
-  "Deposit",
-  "NewSeries",
-  "PlayAddedToSet",
-  "PlayCreated",
-  "PlayRetiredFromSet",
-  "SetCreated",
-  "SetLocked",
-  "Withdraw",
+  // "Deposit",
+  // "NewSeries",
+  // "PlayAddedToSet",
+  // "PlayCreated",
+  // "PlayRetiredFromSet",
+  // "SetCreated",
+  // "SetLocked",
+  // "Withdraw",
 ];
 
 export default class TopShotWorker extends BaseEventHandler {

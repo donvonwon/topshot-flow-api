@@ -21,9 +21,9 @@ pub struct MomentListedDetails {
     }
 }
 
-pub fun main(listerAddress: Address, momentID: UInt64, price: UFix64): MomentListedDetails {
+pub fun main(momentID: UInt64, price: UFix64, seller: Address): MomentListedDetails {
 
-    let collectionRef = getAccount(listerAddress).getCapability(/public/MomentCollection)
+    let collectionRef = getAccount(seller).getCapability(/public/MomentCollection)
             .borrow<&{TopShot.MomentCollectionPublic}>()
             ?? panic("Could not get public moment collection reference")
 
