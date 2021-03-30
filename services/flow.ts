@@ -29,13 +29,7 @@ class Flow {
     return sha.digest();
   };
 
-  sendTx = async ({
-    transaction,
-    args,
-    proposer,
-    authorizations,
-    payer,
-  }): Promise<any> => {
+  sendTx = async ({ transaction, args, proposer, authorizations, payer }): Promise<any> => {
     const response = await fcl.send([
       fcl.transaction`
         ${transaction}
@@ -56,10 +50,7 @@ class Flow {
       sdk.args(args),
     ]);
 
-    const pipe = await sdk.pipe(interaction, [
-      sdk.resolveArguments,
-      sdk.resolveCadence,
-    ]);
+    const pipe = await sdk.pipe(interaction, [sdk.resolveArguments, sdk.resolveCadence]);
 
     return await sdk.decode(await sdk.send(pipe));
   }
