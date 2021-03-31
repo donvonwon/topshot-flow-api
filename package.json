@@ -8,7 +8,7 @@
     "start": "node dist/index.js",
     "workers:dev": "tsnd --respawn workers/daemon.ts",
     "workers": "node dist/workers/daemon.js",
-    "build": "tsc",
+    "build": "tsc && cp -r ./cadence ./dist",
     "format": "prettier \"**/*.ts\" \"test/**/*.ts\"",
     "format:check": "npm run format -- -c",
     "format:write": "npm run format -- --write"
