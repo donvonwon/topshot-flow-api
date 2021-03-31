@@ -2,7 +2,17 @@ import RawEvent from "../models/RawEvent";
 
 class WorkerService {
   async saveRawEvent(event: any) {
-    return RawEvent.create(event);
+    return RawEvent.findOneAndUpdate(
+      {
+        hashedId: event.hashedId,
+      },
+      event,
+      {
+        upsert: true,
+        returnOriginal: false,
+        useFindAndModify: false,
+      }
+    );
   }
 }
 

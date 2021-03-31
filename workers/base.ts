@@ -9,8 +9,8 @@ import WorkerService from "../services/worker";
 // are interested in. It also keeps track of a cursor in the database so we can resume from where we left off.
 
 abstract class BaseEventHandler {
-  private stepSize: number = 200;
-  private stepTimeMs: number = 1000;
+  private stepSize: number = 50;
+  private stepTimeMs: number = 2500; // Avg block time - https://flow.bigdipper.live/
   private latestBlockOffset: number = 3;
   private eventNames: string[] = [];
 
