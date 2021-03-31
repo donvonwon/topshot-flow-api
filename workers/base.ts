@@ -10,7 +10,7 @@ import WorkerService from "../services/worker";
 
 abstract class BaseEventHandler {
   private stepSize: number = 50;
-  private stepTimeMs: number = 2500; // Avg block time - https://flow.bigdipper.live/
+  private stepTimeMs: number = 3250; // Avg block time - https://flow.bigdipper.live/
   private latestBlockOffset: number = 3;
   private eventNames: string[] = [];
 
