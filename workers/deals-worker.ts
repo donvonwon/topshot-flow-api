@@ -84,69 +84,8 @@ class DealsWorker {
 
       if (deal.dealStrength > 0) {
         this.socket.emit("deals.listed", deal);
+        await deal.save();
       }
-
-      //
-      // if (dealStrength > 0) {
-      //   // Send optimistically
-      //   // console.log(`Emitting ${dealParams.playerName} w/ Deal: ${dealStrength}`);
-      //   // socket.emit("deals.listed", dealParams);
-      //
-      //   const findMomentListing = async () => {
-      //     try {
-      //       const data = await getListings(tsClient, moment.setId, moment.playId);
-      //
-      //       if (data) {
-      //         const momentListingLookup = keyBy(data.momentListings, "moment.flowSerialNumber");
-      //         dealParams.listing = momentListingLookup[String(mint.serialNumber)];
-      //         dealParams.priceRange = data.priceRange;
-      //         dealParams.listingCount = data.momentListingCount;
-      //         return dealParams;
-      //       }
-      //     } catch (e) {
-      //       console.log(e.message);
-      //     }
-      //   };
-      //
-      //   const persistDeal = async (deal) => {
-      //     console.log(`Emitting ${dealParams.playerName} w/ Deal: ${dealStrength}`);
-      //     socket.emit("deals.listed", deal);
-      //     await db.collection("deals").replaceOne(
-      //       {
-      //         _id: String(get(metadata, "id")),
-      //       },
-      //       deal,
-      //       {
-      //         upsert: true,
-      //       }
-      //     );
-      //     console.log(`Saved deal for ${deal.playerName} Deal: ${deal.dealStrength}`);
-      //   };
-      //
-      //   const retrySleepMs = 1000;
-      //   const MAX_RETRIES = 3;
-      //
-      //   const performFind = async (retries) => {
-      //     let newRetry = retries + 1;
-      //     if (retries > MAX_RETRIES) {
-      //       console.log("Could not find TS listing", dealParams.playerName);
-      //       return;
-      //     }
-      //
-      //     const found = await findMomentListing();
-      //
-      //     if (found.listing) {
-      //       await persistDeal(found);
-      //     } else {
-      //       // Sleep before next request of data
-      //       await new Promise((resolve) => setTimeout(resolve, retrySleepMs));
-      //       await performFind(newRetry);
-      //     }
-      //   };
-      //
-      //   // Run retry find
-      //   await performFind(0);
-      // }
     } catch (e) {
       console.error(e);
     }
@@ -155,7 +94,23 @@ class DealsWorker {
   }
 
   async purchaseHandler(change: PurchaseChange): Promise<void> {
-    // console.log(change);
+    const purchase = change.fullDocument;
+
+    if (!purchase) {
+      return;
+    }
+
+    try {
+      const momentId = String(purchase.metadata.id);
+      const deal = await this.dealsService.setDealBought(momentId);
+
+      if (deal) {
+        this.socket.emit("deals.bought", deal);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
     return;
   }
 

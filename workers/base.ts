@@ -9,8 +9,8 @@ import EventService from "../services/event";
 // are interested in. It also keeps track of a cursor in the database so we can resume from where we left off.
 
 abstract class BaseEventHandler {
-  private stepSize: number = 250;
-  private stepTimeMs: number = 3250; // Avg block time - https://flow.bigdipper.live/
+  private stepSize: number = 100;
+  private stepTimeMs: number = 2000; // Avg block time - https://flow.bigdipper.live/
   private latestBlockOffset: number = 3;
   private eventNames: string[] = [];
 

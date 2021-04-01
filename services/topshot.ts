@@ -1,5 +1,5 @@
 import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
-import { MOMENT_LISTING_QUERY, MINTED_MOMENT_QUERY } from "./queries/topshot";
+import { LISTING_PRICE_RANGE, MOMENT_LISTING_QUERY, MINTED_MOMENT_QUERY } from "./queries/topshot";
 import "cross-fetch/polyfill";
 
 class TopShotService {
@@ -19,6 +19,22 @@ class TopShotService {
         resultCaching: false,
       }),
     });
+  }
+
+  async getMomentPriceRange(setId: string, playId: string) {
+    const {
+      data: {
+        getUserMomentListings: { data },
+      },
+    } = await this.topshotClient.query({
+      operationName: "GetUserMomentListingsDedicated",
+      query: LISTING_PRICE_RANGE,
+      variables: {
+        input: { setID: setId, playID: playId },
+      },
+    });
+
+    return data;
   }
 
   async getMomentListings(setId: string, playId: string) {
@@ -46,7 +62,7 @@ class TopShotService {
       operationName: "GetMintedMoment",
       query: MINTED_MOMENT_QUERY,
       variables: {
-        momentID: momentId,
+        momentId: momentId,
       },
     });
 

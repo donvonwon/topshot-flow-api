@@ -1,5 +1,20 @@
 import { gql } from "@apollo/client";
 
+export const LISTING_PRICE_RANGE = gql`
+  query GetUserMomentListingsDedicated($input: GetUserMomentListingsInput!) {
+    getUserMomentListings(input: $input) {
+      data {
+        circulationCount
+        priceRange {
+          min
+          max
+        }
+        momentListingCount
+      }
+    }
+  }
+`;
+
 export const MOMENT_LISTING_QUERY = gql`
   query GetUserMomentListingsDedicated($input: GetUserMomentListingsInput!) {
     getUserMomentListings(input: $input) {

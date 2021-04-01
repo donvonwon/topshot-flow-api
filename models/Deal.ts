@@ -2,6 +2,8 @@ import { model, Schema, Model, Document } from "mongoose";
 import versioner from "../plugins/versioner";
 
 export interface IDeal extends Document {
+  _id: string;
+  momentId: number;
   MRvalue: number;
   blockHeight: number;
   blockTimestamp: string;
@@ -32,10 +34,15 @@ export interface IDeal extends Document {
   listingId: string;
   listingPrice: string;
   dapperMomentId: string;
+  setVisualId: string;
+  listingMinPrice: string;
+  listingMaxPrice: string;
 }
 
 const DealSchema: Schema = new Schema(
   {
+    _id: String,
+    momentId: Number,
     MRvalue: Number,
     blockHeight: Number,
     blockTimestamp: String,
@@ -66,6 +73,9 @@ const DealSchema: Schema = new Schema(
     listingId: String,
     listingPrice: String,
     dapperMomentId: String,
+    setVisualId: String,
+    listingMinPrice: String,
+    listingMaxPrice: String,
   },
   { autoIndex: true, timestamps: true }
 );

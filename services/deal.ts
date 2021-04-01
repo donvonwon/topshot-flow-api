@@ -1,6 +1,6 @@
 import get from "lodash/get";
 import pick from "lodash/pick";
-import Deals from "../models/Deals";
+import Deal from "../models/Deal";
 import MomentRanksService from "./momentranks";
 import TopshotService from "./topshot";
 
@@ -67,6 +67,21 @@ class DealsService {
 
   private profitMargin = (basis, current) => (basis - current) / current;
 
+  async setDealBought(momentId: string) {
+    return Deal.findOneAndUpdate(
+      {
+        _id: momentId,
+      },
+      {
+        isBought: true,
+        updatedAt: new Date(),
+      },
+      {
+        new: true,
+      }
+    );
+  }
+
   async buildFromListing(listing: Listing) {
     const [moment, mint] = await Promise.all([
       this.momentranksService.getMomentByPlayerSet(
@@ -86,7 +101,7 @@ class DealsService {
     const dealStrength = this.getDealStrength(profitMargin);
     const momentId = get(metadata, "id");
 
-    const deal = new Deals({
+    const deal = new Deal({
       _id: String(momentId),
       hashedId,
       blockHeight,
@@ -112,21 +127,33 @@ class DealsService {
       isBought: false,
       createdAt,
       updatedAt,
-      dapperMomentId: moment.dapperId,
+      dapperMomentId: mint.dapperId,
     });
 
     // Populating listing information from topshot
-    const mintedMomentListing = await this.topshotService.getMintedMoment(deal.dapperMomentId);
+    // Still return if cant look it up
+    try {
+      const [minted, listings] = await Promise.all([
+        this.topshotService.getMintedMoment(deal.dapperMomentId),
+        this.topshotService.getMomentPriceRange(deal.setId, deal.playId),
+      ]);
 
-    console.log("mintedMomentListing", mintedMomentListing);
+      const { set, setPlay, price, listingOrderID, owner } = minted;
+      const { priceRange, momentListingCount } = listings;
 
-    /*
-    listingOwnerUsername: null,
-      listingOwnerProfileImage: null,
-      listingOwnerDapperID: null,
-      listingId: null,
-      listingPrice: null,
-     */
+      deal.setVisualId = set.setVisualId;
+      deal.inCirculation = setPlay.circulationCount;
+      deal.listingOwnerUsername = owner.username;
+      deal.listingOwnerProfileImage = owner.profileImageUrl;
+      deal.listingOwnerDapperID = owner.dapperID;
+      deal.listingId = listingOrderID;
+      deal.listingPrice = price;
+      deal.listingCount = momentListingCount;
+      deal.listingMinPrice = priceRange.min;
+      deal.listingMaxPrice = priceRange.max;
+    } catch (error) {
+      console.error(`DealService:buildFromListing:populating-ts-listing ${deal.dapperMomentId}`);
+    }
 
     return deal;
   }
