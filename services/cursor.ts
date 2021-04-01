@@ -1,6 +1,11 @@
 import BlockCursor from "../models/BlockCursor";
 
 class CursorService {
+
+  async findByEventName(eventName){
+    return BlockCursor.findOne({ eventName });
+  }
+
   async findOrInsertLatestCursor(eventName: string, latestBlockHeight: number) {
     let blockCursor = await BlockCursor.findOne({ eventName });
     if (!blockCursor) {

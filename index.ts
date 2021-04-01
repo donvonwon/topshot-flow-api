@@ -28,7 +28,15 @@ async function run() {
   const dealService = new DealService(momentranksService, topshotService);
 
   // Run API
-  const app = initApp(clientSockets);
+  const app = initApp(clientSockets, {
+    cursorService,
+    flowService,
+    eventService,
+    topshotService,
+    momentranksService,
+    dealService,
+  });
+
   const httpServer = createServer(app);
 
   // Setup topshotBeta DB connection

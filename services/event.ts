@@ -23,6 +23,10 @@ class EventsService {
     ]);
   }
 
+  async getTotalEvents(): Promise<any> {
+    return RawEvent.countDocuments();
+  }
+
   async save(event: any) {
     return RawEvent.findOneAndUpdate(
       {

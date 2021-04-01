@@ -27,6 +27,12 @@ class MomentRanksService {
     return this;
   }
 
+  async getAccount(value) {
+    return this.db.collection(MomentRanksService.ACCOUNTS_COLLECTION).findOne({
+      $or: [{ flowAddress: value }, { dapperId: value }, { username: value }],
+    });
+  }
+
   async getMomentByPlayerSet(playerName, setName) {
     return this.db.collection(MomentRanksService.MOMENT_COLLECTION).findOne({
       playerName,

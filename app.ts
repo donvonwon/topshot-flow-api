@@ -6,13 +6,42 @@ import { json, urlencoded } from "body-parser";
 const API_VERSION = "/v1/";
 
 // Init all routes, setup middlewares and dependencies
-const initApp = (clientSockets) => {
+const initApp = (
+  clientSockets,
+  { cursorService, flowService, eventService, topshotService, momentranksService, dealService }
+) => {
   const app = express();
 
   // @ts-ignore
   app.use(cors());
   app.use(json());
   app.use(urlencoded({ extended: false }));
+
+  app.get("/account/:value", async (req: Request, res: Response) => {
+    const value = req.params.value;
+    const account = await momentranksService.getAccount(value);
+    return res.json({
+      account,
+    });
+  });
+
+  app.get("/blockchain", async (req: Request, res: Response) => {
+    const [momentPurchased, momentListed, total] = await Promise.all([
+      cursorService.findByEventName("A.c1e4f4f4c4257510.Market.MomentPurchased"),
+      cursorService.findByEventName("A.c1e4f4f4c4257510.Market.MomentListed"),
+      eventService.getTotalEvents(),
+    ]);
+
+    return res.json({
+      cursors: {
+        momentPurchased,
+        momentListed,
+      },
+      events: {
+        total,
+      },
+    });
+  });
 
   app.get("/connections", async (req: Request, res: Response) => {
     return res.json({
@@ -24,12 +53,6 @@ const initApp = (clientSockets) => {
     return res.json({
       ts: new Date(),
       up: true,
-    });
-  });
-
-  app.get("/monitor", async (req: Request, res: Response) => {
-    return res.json({
-      stats: {},
     });
   });
 

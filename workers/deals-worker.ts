@@ -73,7 +73,6 @@ class DealsWorker {
   }
 
   detach(): void {
-    this.socket.disconnect();
     this.socket = null;
   }
 
