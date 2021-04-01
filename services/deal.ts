@@ -84,11 +84,19 @@ class DealsService {
   }
 
   async buildFromListing(listing: Listing) {
+    const { hashedId, blockHeight, blockTimestamp, data, metadata, createdAt, updatedAt } =
+      listing || {};
+
+    if (!metadata) {
+      return;
+    }
+
+    const momentId = get(listing.metadata, "id");
+    const playerName = get(listing, "metadata.play.FullName");
+    const setName = get(listing, "metadata.setName");
+
     const [moment, mint] = await Promise.all([
-      this.momentranksService.getMomentByPlayerSet(
-        get(listing, "metadata.play.FullName"),
-        get(listing, "metadata.setName")
-      ),
+      this.momentranksService.getMomentByPlayerSet(playerName, setName),
       this.momentranksService.getMintByGlobalId(get(listing, "metadata.id")),
     ]);
 
@@ -96,16 +104,9 @@ class DealsService {
       return;
     }
 
-    const { hashedId, blockHeight, blockTimestamp, data, metadata, createdAt, updatedAt } = listing;
     const { MRvalue } = mint;
     const profitMargin = this.profitMargin(MRvalue, data.price);
     const dealStrength = this.getDealStrength(profitMargin);
-
-    if(!metadata){
-      return;
-    }
-    
-    const momentId = get(metadata, "id");
 
     const deal = new Deal({
       _id: String(momentId),

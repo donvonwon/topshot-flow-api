@@ -95,7 +95,7 @@ class DealsWorker {
         await deal.save();
       }
     } catch (e) {
-      console.error(e);
+      console.error(e.message);
     }
 
     return;

@@ -1,9 +1,11 @@
 {
-  "apps": [{
-    "script" : "node dist/index.js",
-    "env": {
-      "NODE_ENV": "production",
-      "PORT": "3000"
+  "apps": [
+    {
+      "script": "node dist/index.js",
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": "6999"
+      }
     }
-  }]
+  ]
 }
