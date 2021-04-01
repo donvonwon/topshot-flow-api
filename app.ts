@@ -6,13 +6,19 @@ import { json, urlencoded } from "body-parser";
 const API_VERSION = "/v1/";
 
 // Init all routes, setup middlewares and dependencies
-const initApp = () => {
+const initApp = (clientSockets) => {
   const app = express();
 
   // @ts-ignore
   app.use(cors());
   app.use(json());
   app.use(urlencoded({ extended: false }));
+
+  app.get("/connections", async (req: Request, res: Response) => {
+    return res.json({
+      sockets: clientSockets,
+    });
+  });
 
   app.get("/health", async (req: Request, res: Response) => {
     return res.json({
