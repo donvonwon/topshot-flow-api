@@ -60,12 +60,17 @@ type PurchaseChange = {
 };
 
 class DealsWorker {
+  private socket;
+
   constructor(
     private readonly config: any,
-    private readonly socket: any,
     private readonly eventsService: EventsService,
     private readonly dealsService: DealsService
   ) {}
+
+  attach(socket): void {
+    this.socket = socket;
+  }
 
   async listingHandler(change: ListingChange): Promise<void> {
     const listing = change.fullDocument;
@@ -83,7 +88,10 @@ class DealsWorker {
       }
 
       if (deal.dealStrength > 0) {
-        this.socket.emit("deals.listed", deal);
+        if (this.socket) {
+          this.socket.emit("deals.listed", deal);
+        }
+
         await deal.save();
       }
     } catch (e) {
@@ -104,7 +112,7 @@ class DealsWorker {
       const momentId = String(purchase.metadata.id);
       const deal = await this.dealsService.setDealBought(momentId);
 
-      if (deal) {
+      if (deal && this.socket) {
         this.socket.emit("deals.bought", deal);
       }
     } catch (e) {
@@ -114,12 +122,14 @@ class DealsWorker {
     return;
   }
 
-  async run(): Promise<void> {
+  async run(): Promise<this> {
     const listingStream = await this.eventsService.getListingStream();
     const purchaseStream = await this.eventsService.getPurchaseStream();
 
     listingStream.on("change", this.listingHandler.bind(this));
     purchaseStream.on("change", this.purchaseHandler.bind(this));
+
+    return this;
   }
 }
 

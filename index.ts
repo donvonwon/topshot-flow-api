@@ -36,6 +36,9 @@ async function run() {
     useUnifiedTopology: true,
   });
 
+  // Run deals generator
+  const dealsWorker = await new DealsWorker(config, eventService, dealService).run();
+
   // Setup socket connection
   if (config.frontendUrl) {
     const io = new Server(httpServer, {
@@ -48,13 +51,8 @@ async function run() {
     io.on("connection", (socket: Socket) => {
       console.log(`Established server socket ${socket.id}`);
 
-      // Set up deal worker and emitter
-      new DealsWorker(
-        config,
-        socket,
-        eventService,
-        dealService
-      ).run();
+      // Attach worker to socket
+      dealsWorker.attach(socket);
 
       socket.on("disconnect", () => {
         console.log(`Socket disconnected ${socket.id}`);

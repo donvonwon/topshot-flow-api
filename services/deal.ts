@@ -78,6 +78,7 @@ class DealsService {
       },
       {
         new: true,
+        useFindAndModify: false,
       }
     );
   }

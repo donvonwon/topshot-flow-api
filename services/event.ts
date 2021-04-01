@@ -31,7 +31,7 @@ class EventsService {
       event,
       {
         upsert: true,
-        returnOriginal: false,
+        new: true,
         useFindAndModify: false,
       }
     );
