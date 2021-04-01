@@ -72,6 +72,11 @@ class DealsWorker {
     this.socket = socket;
   }
 
+  detach(): void {
+    this.socket.disconnect();
+    this.socket = null;
+  }
+
   async listingHandler(change: ListingChange): Promise<void> {
     const listing = change.fullDocument;
 

@@ -14,6 +14,8 @@ import MarketWorker from "./workers/market-worker";
 import TopshotWorker from "./workers/topshot-worker";
 import DealsWorker from "./workers/deals-worker";
 
+const clientSockets = {};
+
 async function run() {
   const config = getConfig();
 
@@ -51,11 +53,15 @@ async function run() {
     io.on("connection", (socket: Socket) => {
       console.log(`Established server socket ${socket.id}`);
 
+      clientSockets[socket.id] = true;
+
       // Attach worker to socket
       dealsWorker.attach(socket);
 
       socket.on("disconnect", () => {
         console.log(`Socket disconnected ${socket.id}`);
+        dealsWorker.detach();
+        delete clientSockets[socket.id];
       });
     });
   }
