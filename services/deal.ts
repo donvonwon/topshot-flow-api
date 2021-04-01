@@ -100,6 +100,11 @@ class DealsService {
     const { MRvalue } = mint;
     const profitMargin = this.profitMargin(MRvalue, data.price);
     const dealStrength = this.getDealStrength(profitMargin);
+
+    if(!metadata){
+      return;
+    }
+    
     const momentId = get(metadata, "id");
 
     const deal = new Deal({
