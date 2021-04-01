@@ -10,13 +10,15 @@ interface IConfig {
   port: number;
   accessApi: string;
   databaseUrl: string;
+  mrDatabaseUrl: string;
   contracts: any;
+  frontendUrl: string;
+  topshotGraphQLUrl: string;
 }
 
 export function getConfig(): IConfig {
   const env = dotenv.config({
-    path:
-      process.env.NODE_ENV === productionEnv ? productionDotEnv : localDotEnv,
+    path: process.env.NODE_ENV === productionEnv ? productionDotEnv : localDotEnv,
   });
 
   dotenvExpand(env);
@@ -38,10 +40,19 @@ export function getConfig(): IConfig {
 
   const databaseUrl = process.env.DATABASE_URL || "";
 
+  const frontendUrl = process.env.FRONTEND_URL || "";
+
+  const mrDatabaseUrl = process.env.MR_DATABASE_URL || "";
+
+  const topshotGraphQLUrl = process.env.TOPSHOT_GRAPHQL_URL || "";
+
   return {
     port,
     accessApi,
     databaseUrl,
     contracts,
+    frontendUrl,
+    mrDatabaseUrl,
+    topshotGraphQLUrl,
   };
 }

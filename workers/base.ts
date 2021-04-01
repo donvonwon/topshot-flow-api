@@ -3,13 +3,13 @@ import { getEventsAtBlockHeightRange, send } from "@onflow/sdk";
 import { IBlockCursor } from "../models/BlockCursor";
 import CursorService from "../services/cursor";
 import FlowService from "../services/flow";
-import WorkerService from "../services/worker";
+import EventService from "../services/event";
 
 // BaseEventHandler will iterate through a range of block heights and then run a callback to process any events we
 // are interested in. It also keeps track of a cursor in the database so we can resume from where we left off.
 
 abstract class BaseEventHandler {
-  private stepSize: number = 50;
+  private stepSize: number = 250;
   private stepTimeMs: number = 3250; // Avg block time - https://flow.bigdipper.live/
   private latestBlockOffset: number = 3;
   private eventNames: string[] = [];
@@ -18,7 +18,7 @@ abstract class BaseEventHandler {
     private readonly config: any,
     private readonly cursorService: CursorService,
     private readonly flowService: FlowService,
-    private readonly workerService: WorkerService,
+    private readonly eventService: EventService,
     private readonly workerEvents: string[]
   ) {
     const address = fcl.sansPrefix(config.address);
@@ -73,7 +73,7 @@ abstract class BaseEventHandler {
                 decoded.map((event) =>
                   this.onEvent(event, {
                     flowService: this.flowService,
-                    workerService: this.workerService,
+                    eventService: this.eventService,
                   })
                 )
               );
@@ -99,7 +99,7 @@ abstract class BaseEventHandler {
 
   abstract onEvent(
     event: any,
-    di: { flowService: FlowService; workerService: WorkerService }
+    di: { flowService: FlowService; eventService: EventService }
   ): Promise<void>;
 
   private async getBlockRange(currentBlockCursor) {

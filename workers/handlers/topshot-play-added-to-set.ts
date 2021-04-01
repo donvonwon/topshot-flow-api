@@ -7,7 +7,7 @@ import hash from "object-hash";
  **/
 
 export default async (event: any, di) => {
-  const { workerService } = di;
+  const { eventService } = di;
 
   const rawEvent = {
     hashedId: hash(event),
@@ -15,7 +15,7 @@ export default async (event: any, di) => {
   };
 
   try {
-    await workerService.saveRawEvent(rawEvent);
+    await eventService.save(rawEvent);
   } catch (error) {
     console.error(error);
   }

@@ -21,7 +21,7 @@ const MARKET_CONTRACT_ADDRESS_VAR = "0xMARKETADDRESS";
 export default async (event: any, di) => {
   const { data, blockHeight } = event;
   const { id: globalMomentId, seller } = data;
-  const { flowService, workerService } = di;
+  const { flowService, eventService } = di;
   const { contracts } = getConfig();
   const rawEvent = {
     hashedId: hash(event),
@@ -40,13 +40,12 @@ export default async (event: any, di) => {
       args: [sdk.arg(globalMomentId, t.UInt64), sdk.arg(seller, t.Address)],
     });
   } catch (error) {
-    console.log(error.message);
-    console.error(`Error in event metadata: ${rawEvent.blockHeight}`);
+    console.error(`Error in event metadata: ${rawEvent.blockHeight} - ${error.message}`);
   }
 
   try {
-    await workerService.saveRawEvent(rawEvent);
+    await eventService.save(rawEvent);
   } catch (error) {
-    console.error(`Error in saving raw event: ${rawEvent.blockHeight}`);
+    console.error(`Error in saving raw event: ${rawEvent.blockHeight}  - ${error.message}`);
   }
 };

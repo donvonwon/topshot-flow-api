@@ -1,6 +1,6 @@
 import CursorService from "../services/cursor";
 import FlowService from "../services/flow";
-import WorkerService from "../services/worker";
+import EventService from "../services/event";
 import BaseEventHandler from "./base";
 import momentPurchasedHandler from "./handlers/market-moment-purchased";
 import momentListedHandler from "./handlers/market-moment-listed";
@@ -11,7 +11,7 @@ import cutPercentageChangeHandler from "./handlers/market-cut-percentage-change"
 const workerEvents = [
   "MomentPurchased",
   "MomentListed",
-  "MomentWithdrawn",
+  // "MomentWithdrawn",
   // "MomentPriceChanged",
   // "CutPercentageChanged",
 ];
@@ -21,9 +21,9 @@ export default class MarketWorker extends BaseEventHandler {
     config,
     cursorService: CursorService,
     flowService: FlowService,
-    workerService: WorkerService
+    eventService: EventService
   ) {
-    super(config, cursorService, flowService, workerService, workerEvents);
+    super(config, cursorService, flowService, eventService, workerEvents);
   }
 
   async onEvent(event: any, di: any): Promise<void> {
@@ -38,7 +38,7 @@ export default class MarketWorker extends BaseEventHandler {
     } else if (event.type.includes("CutPercentageChanged")) {
       return cutPercentageChangeHandler(event, di);
     } else {
-      console.log(`Unhandeled event in MarketWorker: ${event.type}`, event);
+      console.warn(`Unhandeled event in MarketWorker: ${event.type}`, event);
     }
   }
 }

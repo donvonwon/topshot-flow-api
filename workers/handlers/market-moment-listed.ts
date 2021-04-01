@@ -21,7 +21,7 @@ const MARKET_CONTRACT_ADDRESS_VAR = "0xMARKETADDRESS";
 export default async (event: any, di) => {
   const { data, blockHeight } = event;
   const { id: globalMomentId, seller, price } = data;
-  const { flowService, workerService } = di;
+  const { flowService, eventService } = di;
   const { contracts } = getConfig();
 
   const rawEvent = {
@@ -45,13 +45,12 @@ export default async (event: any, di) => {
       ],
     });
   } catch (error) {
-    console.log("error", error.message);
-    console.error(`Error in event metadata: ${rawEvent.blockHeight}`);
+    console.error(`Error in event metadata: ${rawEvent.blockHeight} - ${error.message}`);
   }
 
   try {
-    await workerService.saveRawEvent(rawEvent);
+    await eventService.save(rawEvent);
   } catch (error) {
-    console.error(`Error in saving raw event: ${rawEvent.blockHeight}`);
+    console.error(`Error in saving raw event: ${rawEvent.blockHeight} - ${error.message}`);
   }
 };

@@ -1,6 +1,6 @@
 import CursorService from "../services/cursor";
 import FlowService from "../services/flow";
-import WorkerService from "../services/worker";
+import EventService from "../services/event";
 import BaseEventHandler from "./base";
 import topshotMomentMintedHandler from "./handlers/topshot-moment-minted";
 import topshotDepositHandler from "./handlers/topshot-deposit";
@@ -29,9 +29,9 @@ export default class TopShotWorker extends BaseEventHandler {
     config,
     cursorService: CursorService,
     flowService: FlowService,
-    workerService: WorkerService
+    eventService: EventService
   ) {
-    super(config, cursorService, flowService, workerService, workerEvents);
+    super(config, cursorService, flowService, eventService, workerEvents);
   }
 
   async onEvent(event: any, di: any): Promise<void> {
@@ -54,7 +54,7 @@ export default class TopShotWorker extends BaseEventHandler {
     } else if (event.type.includes("Withdraw")) {
       return topshotWithrawHandler(event, di);
     } else {
-      console.log(`Unhandeled event in TopShotWorker: ${event.type}`, event);
+      console.warn(`Unhandeled event in TopShotWorker: ${event.type}`, event);
     }
   }
 }
