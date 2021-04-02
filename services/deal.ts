@@ -73,6 +73,10 @@ class DealsService {
     return (basis - current) / current;
   };
 
+  async getTopDeals(limit) {
+    return Deal.find({ isBought: false }).sort({ createdAt: -1 }).limit(limit);
+  }
+
   async setDealBought(momentId: string) {
     return Deal.findOneAndUpdate(
       {

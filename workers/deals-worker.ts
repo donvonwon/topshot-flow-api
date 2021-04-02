@@ -86,6 +86,10 @@ class DealsWorker {
     try {
       const deal = await this.dealsService.buildFromListing(listing);
 
+      if (this.socket) {
+        this.socket.emit("market.listed", deal);
+      }
+
       if (!deal) {
         console.log(`DealsWorker Error: Could not create deal from listing ${listing._id}`);
         return;
@@ -110,6 +114,10 @@ class DealsWorker {
 
     if (!purchase) {
       return;
+    }
+
+    if (this.socket) {
+      this.socket.emit("market.bought", purchase);
     }
 
     try {

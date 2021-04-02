@@ -3,8 +3,6 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import { json, urlencoded } from "body-parser";
 
-const API_VERSION = "/v1/";
-
 // Init all routes, setup middlewares and dependencies
 const initApp = (
   clientSockets,
@@ -16,6 +14,14 @@ const initApp = (
   app.use(cors());
   app.use(json());
   app.use(urlencoded({ extended: false }));
+
+  app.get("/deals", async (req: Request, res: Response) => {
+    const limit = req.params.limit || 50;
+    const deals = await dealService.getTopDeals(limit);
+    return res.json({
+      deals,
+    });
+  });
 
   app.get("/account/:value", async (req: Request, res: Response) => {
     const value = req.params.value;
