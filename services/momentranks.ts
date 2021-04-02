@@ -33,6 +33,18 @@ class MomentRanksService {
     });
   }
 
+  async getAccountTransactions(address) {
+    return this.db.collection(MomentRanksService.TRANSACTIONS_COLLECTION).find({
+      $or: [{ buyerId: address }, { sellerId: address }],
+    });
+  }
+
+  async getAccountCollection(address) {
+    return this.db.collection(MomentRanksService.MINTS_COLLECTION).find({
+      ownerFlowAddressTopshotApi: address
+    });
+  }
+
   async getMomentByPlayerSet(playerName, setName) {
     return this.db.collection(MomentRanksService.MOMENT_COLLECTION).findOne({
       playerName,

@@ -24,7 +24,7 @@ type Listing = {
 };
 
 class DealsService {
-  private static MIN_PROFIT_MARGIN = 0.15;
+  private static MIN_PROFIT_MARGIN = 0.2;
   private static STRENGTH_1_MAX = 0.45;
   private static STRENGTH_2_MAX = 0.65;
   private static STRENGTH_3_MAX = 1.0;
@@ -65,7 +65,13 @@ class DealsService {
     return 0;
   };
 
-  private profitMargin = (basis, current) => (basis - current) / current;
+  private profitMargin = (basis, current) => {
+    if (parseInt(basis, 10) - parseInt(current, 10) === 0) {
+      return 0;
+    }
+
+    return (basis - current) / current;
+  };
 
   async setDealBought(momentId: string) {
     return Deal.findOneAndUpdate(

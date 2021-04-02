@@ -20,8 +20,22 @@ const initApp = (
   app.get("/account/:value", async (req: Request, res: Response) => {
     const value = req.params.value;
     const account = await momentranksService.getAccount(value);
+
+    if (!account) {
+      return res.status(404).json({
+        e: "No account found",
+      });
+    }
+
+    const [transactions, collection] = await Promise.all([
+      momentranksService.getAccountTransactions(account.flowAddress),
+      momentranksService.getAccountCollection(account.flowAddress),
+    ]);
+
     return res.json({
       account,
+      transactions,
+      collection,
     });
   });
 
